@@ -11,6 +11,7 @@ bookmarkRouter
   .route('/bookmarks')
   .get((req, res) => {
     res.json(store.bookmarks)
+  })
   .post(bodyParser, (req, res) => {
     const {title, url, description, rating} = req.body
     const bookmarks = { id: uuid(), title, url, description, rating }
@@ -50,40 +51,41 @@ bookmarkRouter
       .send(`${rating} needs to be a value between 1 and 5`)
     }
 
-    if(!validUrl(url)) {
+    if(!validUrl.isUri(url)) {
       logger.error(`${url} provided is not a valid URL`)
       return res
       .status(400)
       .send(`${url} provided is not a valid URL`)
     }
 
-    store.bookmarks.push()
+    store.bookmarks.push(bookmarks)
 
-    logger.info(`Bookmark with Bookmark ID:${id} created`)
+    logger.info(`Bookmark with Bookmark ID:${bookmarks.id} created`)
     res
     .status(201)
     .location(`http://localhost:8000/bookmarks/${bookmarks.id}`)
     .json(bookmarks)
 
     })
-})
+
 
     bookmarkRouter
         .route('/bookmarks/:id')
         .get((req, res) => {
             const { id } = req.params;
         
-            const bookmark = bookmarks.findIndex(u => u.id === id);
+            const bookmark = bookmarks.find(u => u.id === id);
         
             if(!bookmark) {
                 logger.error(`whoa, id ${id} not found!`)
                 return res.status(404).send('sorry bud, no luck finding anything')
             }
+            res.status(200).json(bookmark)
         })
         .delete((req, res) => {
         const { id } = req.params;
     
-        const bookmarkIndex = users.findIndex(u => u.id === id);
+        const bookmarkIndex = store.bookmarks.findIndex(u => u.id === id);
     
         if (bookmarkIndex === -1) {
             logger.error(`Eep! No way to delete what is not found! ${id}!`)
