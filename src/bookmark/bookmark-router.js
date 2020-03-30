@@ -74,7 +74,7 @@ bookmarkRouter
         .get((req, res) => {
             const { id } = req.params;
         
-            const bookmark = bookmarks.find(u => u.id === id);
+            const bookmark = store.bookmarks.find(u => u.id === id);
         
             if(!bookmark) {
                 logger.error(`whoa, id ${id} not found!`)
